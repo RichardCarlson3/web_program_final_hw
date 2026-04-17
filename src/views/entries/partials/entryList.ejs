@@ -1,0 +1,38 @@
+<div class="list-header">
+  <h3>All Entries</h3>
+  <p><%= entries.length %> item<%= entries.length === 1 ? "" : "s" %></p>
+</div>
+
+<ul class="entry-list">
+  <% if (!entries.length) { %>
+    <li class="entry-card empty-state">No journal entries yet.</li>
+  <% } %>
+
+  <% entries.forEach((entry) => { %>
+    <li class="entry-card">
+      <div class="entry-card-header">
+        <div>
+          <strong><%= entry.title %></strong>
+          <p class="entry-tag"><%= entry.tag %></p>
+        </div>
+        <span class="status-pill status-<%= entry.status %>"><%= entry.status %></span>
+      </div>
+
+      <p class="entry-content"><%= entry.body %></p>
+      <p class="entry-meta">
+        id=<%= entry.id %> created=<%= entry.createdAt.toLocaleString() %>
+      </p>
+
+      <form
+        class="inline-form"
+        hx-post="/entries/<%= entry.id %>/toggle"
+        hx-target="#entries-panel"
+        hx-swap="innerHTML"
+      >
+        <button type="submit">
+          <%= entry.status === "completed" ? "Mark Active" : "Mark Completed" %>
+        </button>
+      </form>
+    </li>
+  <% }) %>
+</ul>

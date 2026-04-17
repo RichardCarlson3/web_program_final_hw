@@ -1,0 +1,71 @@
+<section
+  id="session-panel"
+  class="panel session-panel"
+  <% if (outOfBand) { %>hx-swap-oob="true"<% } %>
+>
+  <div class="panel-header">
+    <h2>Browser Session</h2>
+    <p>
+      This session object now stores both browser-specific state and the signed-in user
+      identity when authentication succeeds.
+    </p>
+  </div>
+
+  <div class="session-grid">
+    <div class="session-field">
+      <span class="session-key">authStatus</span>
+      <code id="session-auth-status">
+        <%= session.authenticatedUser ? "authenticated" : "anonymous" %>
+      </code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">browserLabel</span>
+      <code id="session-browser-label"><%= session.browserLabel %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">browserId</span>
+      <code id="session-browser-id"><%= session.browserId %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">visitCount</span>
+      <code id="session-visit-count"><%= session.visitCount %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">lastFilter</span>
+      <code id="session-last-filter"><%= session.lastFilter %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">lastSearch</span>
+      <code id="session-last-search"><%= session.lastSearch || "(none)" %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">createdAt</span>
+      <code id="session-created-at"><%= session.createdAt %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">lastSeenAt</span>
+      <code id="session-last-seen-at"><%= session.lastSeenAt %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">userEmail</span>
+      <code id="session-user-email"><%= session.authenticatedUser?.email || "(none)" %></code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">displayName</span>
+      <code id="session-display-name">
+        <%= session.authenticatedUser?.displayName || "(none)" %>
+      </code>
+    </div>
+    <div class="session-field">
+      <span class="session-key">signedInAt</span>
+      <code id="session-signed-in-at">
+        <%= session.authenticatedUser?.signedInAt || "(none)" %>
+      </code>
+    </div>
+  </div>
+
+  <p class="session-note">
+    Store only small, non-sensitive browser state plus the authenticated identity. Keep
+    passwords and full domain records out of the session.
+  </p>
+</section>

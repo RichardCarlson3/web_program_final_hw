@@ -1,0 +1,112 @@
+<section class="page-intro">
+  <p class="eyebrow">Lecture 8.12</p>
+  <h1>Journal Entries Dashboard</h1>
+  <p>
+    This version adds authentication on top of the 6.11 session flow. The journal routes
+    are protected, and the session now stores both browser information and the
+    authenticated user identity.
+  </p>
+  <% if (session.authenticatedUser) { %>
+    <p class="welcome-note">
+      Signed in as <strong><%= session.authenticatedUser.displayName %></strong>
+      (<%= session.authenticatedUser.email %>).
+    </p>
+  <% } %>
+</section>
+
+<% if (pageError) { %>
+  <%- include("partials/error", { message: pageError }) %>
+<% } %>
+
+<%- include("partials/sessionPanel", { session, outOfBand: false }) %>
+
+<section class="workspace-grid">
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Create Entry</h2>
+      <p>Add a title, body, and tag. Successful requests swap the entry list panel.</p>
+    </div>
+
+    <form
+      class="journal-form"
+      hx-post="/entries/new"
+      hx-target="#entries-panel"
+      hx-swap="innerHTML"
+      hx-on::after-request="if (event.detail.successful) this.reset()"
+    >
+      <label for="title">Title</label>
+      <input id="title" name="title" required />
+
+      <label for="body">Body</label>
+      <textarea id="body" name="body" rows="5" required></textarea>
+
+      <label for="tag">Tag</label>
+      <input id="tag" name="tag" placeholder="general" />
+
+      <button type="submit">Create Entry</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Browse Entries</h2>
+      <p>Search live or filter by status. Toggle buttons update the same panel.</p>
+    </div>
+
+    <div class="toolbar">
+      <label class="search-field" for="search">
+        <span>Search</span>
+        <input
+          id="search"
+          name="q"
+          placeholder="search title/body/tag"
+          value="<%= session.lastSearch %>"
+          hx-get="/entries/search"
+          hx-trigger="keyup changed delay:300ms"
+          hx-target="#entries-panel"
+          hx-swap="innerHTML"
+        />
+      </label>
+
+      <div class="filter-group" aria-label="Status Filter">
+        <span class="filter-label">Status</span>
+        <div class="segmented-control">
+          <button
+            type="button"
+            class="<%= session.lastFilter === 'all' ? 'is-active' : '' %>"
+            aria-pressed="<%= session.lastFilter === 'all' %>"
+            hx-get="/entries/filter?status=all"
+            hx-target="#entries-panel"
+            hx-swap="innerHTML"
+          >
+            All
+          </button>
+          <button
+            type="button"
+            class="<%= session.lastFilter === 'active' ? 'is-active' : '' %>"
+            aria-pressed="<%= session.lastFilter === 'active' %>"
+            hx-get="/entries/filter?status=active"
+            hx-target="#entries-panel"
+            hx-swap="innerHTML"
+          >
+            Active
+          </button>
+          <button
+            type="button"
+            class="<%= session.lastFilter === 'completed' ? 'is-active' : '' %>"
+            aria-pressed="<%= session.lastFilter === 'completed' %>"
+            hx-get="/entries/filter?status=completed"
+            hx-target="#entries-panel"
+            hx-swap="innerHTML"
+          >
+            Completed
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section id="entries-panel">
+      <%- include("partials/entryList", { entries }) %>
+    </section>
+  </section>
+</section>

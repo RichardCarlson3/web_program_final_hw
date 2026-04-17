@@ -1,0 +1,17 @@
+### Dashboard page
+GET http://localhost:3000/entries
+
+### Create a journal entry
+POST http://localhost:3000/entries/new
+Content-Type: application/x-www-form-urlencoded
+
+title=Reading+Notes&body=This+body+is+long+enough+to+be+valid.&tag=reading
+
+### Toggle entry 1
+POST http://localhost:3000/entries/1/toggle
+
+### Search entries
+GET http://localhost:3000/entries/search?q=reading
+
+### Filter completed entries
+GET http://localhost:3000/entries/filter?status=completed

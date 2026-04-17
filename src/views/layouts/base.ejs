@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Journal App</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="main-nav">
+        <a href="<%= session?.authenticatedUser ? '/entries' : '/login' %>" class="nav-brand">
+          Journal Entries
+        </a>
+        <div class="nav-actions">
+          <% if (session?.authenticatedUser) { %>
+            <span class="nav-status">
+              Signed in as <strong><%= session.authenticatedUser.displayName %></strong>
+            </span>
+            <form method="post" action="/logout" class="nav-form">
+              <button type="submit" class="secondary-button">Log out</button>
+            </form>
+          <% } else { %>
+            <a href="/login" class="nav-link">Log in</a>
+          <% } %>
+        </div>
+      </nav>
+      <main><%- body %></main>
+    </div>
+  </body>
+</html>

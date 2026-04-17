@@ -1,0 +1,8 @@
+### Invalid create request
+POST http://localhost:3000/entries/new
+Content-Type: application/x-www-form-urlencoded
+
+title=No&body=short&tag=BAD+TAG
+
+### Invalid filter request
+GET http://localhost:3000/entries/filter?status=done
