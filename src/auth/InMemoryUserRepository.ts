@@ -1,6 +1,7 @@
+import { randomUUID } from "node:crypto";
 import { Err, Ok, type Result } from "../lib/result";
 import { UnexpectedDependencyError, type AuthError } from "./errors";
-import type { IUserRepository } from "./UserRepository";
+import type { IUserRepository, CreateUserInput } from "./UserRepository";
 import type { IUserRecord } from "./User";
 
 export const DEMO_USERS: IUserRecord[] = [
@@ -29,9 +30,24 @@ class InMemoryUserRepository implements IUserRepository {
       return Err(UnexpectedDependencyError("Unable to read the demo users."));
     }
   }
+
+  async create(input: CreateUserInput): Promise<Result<IUserRecord, AuthError>> {
+    try {
+      const created: IUserRecord = {
+        id: `user-${randomUUID()}`,
+        email: input.email,
+        displayName: input.displayName,
+        password: input.password,
+      };
+
+      this.users.push(created);
+      return Ok(created);
+    } catch {
+      return Err(UnexpectedDependencyError("Unable to create the user."));
+    }
+  }
 }
 
 export function CreateInMemoryUserRepository(): IUserRepository {
-  // We keep users in memory in this lecture so students can focus on auth flow first.
-  return new InMemoryUserRepository(DEMO_USERS);
+  return new InMemoryUserRepository([...DEMO_USERS]);
 }
