@@ -45,7 +45,7 @@ class RegistrationService implements IRegistrationService {
     }
 
     const existing = await this.users.findByEmail(email);
-    if (!existing.ok) {
+    if (existing.ok === false) {
       return Err(UnexpectedDependencyError(existing.value.message));
     }
 
@@ -60,7 +60,7 @@ class RegistrationService implements IRegistrationService {
     };
 
     const created = await this.users.create(createInput);
-    if (!created.ok) {
+    if (created.ok === false) {
       return Err(UnexpectedDependencyError(created.value.message));
     }
 

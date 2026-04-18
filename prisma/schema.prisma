@@ -15,3 +15,10 @@ model JournalEntry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model User {
+  id          String @id
+  email       String @unique
+  displayName String
+  password    String
+}

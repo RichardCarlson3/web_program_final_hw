@@ -3,6 +3,8 @@ import { PrismaClient } from "@prisma/client";
 import { CreateAuthController } from "./auth/AuthController";
 import { CreateAuthService } from "./auth/AuthService";
 import { CreateInMemoryUserRepository } from "./auth/InMemoryUserRepository";
+import { CreatePrismaUserRepository } from "./auth/PrismaUserRepository";
+import { CreateRegistrationService } from "./auth/RegistrationService";
 import { CreateApp } from "./app";
 import type { IApp } from "./contracts";
 import { CreateJournalController } from "./controller/JournalController";
@@ -18,21 +20,34 @@ export function createComposedApp(
 ): IApp {
   const resolvedLogger = logger ?? CreateLoggingService();
 
-  const repository =
+  const prisma =
     mode === "prisma"
-      ? CreatePrismaJournalRepository(
-          new PrismaClient({
-            adapter: new PrismaBetterSqlite3({
-              url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
-            }),
+      ? new PrismaClient({
+          adapter: new PrismaBetterSqlite3({
+            url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
           }),
-        )
+        })
+      : null;
+
+  const journalRepository =
+    mode === "prisma" && prisma
+      ? CreatePrismaJournalRepository(prisma)
       : CreateInMemoryJournalRepository();
 
-  const service = CreateJournalService(repository);
-  const authUsers = CreateInMemoryUserRepository();
-  const authService = CreateAuthService(authUsers);
-  const authController = CreateAuthController(authService, resolvedLogger);
-  const controller = CreateJournalController(service, resolvedLogger);
+  const userRepository =
+    mode === "prisma" && prisma
+      ? CreatePrismaUserRepository(prisma)
+      : CreateInMemoryUserRepository();
+
+  const journalService = CreateJournalService(journalRepository);
+  const authService = CreateAuthService(userRepository);
+  const registrationService = CreateRegistrationService(userRepository);
+  const authController = CreateAuthController(
+    authService,
+    registrationService,
+    resolvedLogger,
+  );
+  const controller = CreateJournalController(journalService, resolvedLogger);
+
   return CreateApp(controller, authController, resolvedLogger);
 }

@@ -143,6 +143,30 @@ class ExpressApp implements IApp {
       }),
     );
 
+    this.app.get(
+      "/register",
+      asyncHandler(async (req, res) => {
+        const store = sessionStore(req);
+        const browserSession = recordPageView(store);
+        await this.authController.showRegister(res, browserSession);
+      }),
+    );
+
+    this.app.post(
+      "/register",
+      asyncHandler(async (req, res) => {
+        const input = {
+          email: typeof req.body.email === "string" ? req.body.email : "",
+          displayName: typeof req.body.displayName === "string" ? req.body.displayName : "",
+          password: typeof req.body.password === "string" ? req.body.password : "",
+          confirmPassword:
+            typeof req.body.confirmPassword === "string" ? req.body.confirmPassword : "",
+        };
+
+        await this.authController.registerFromForm(res, input, sessionStore(req));
+      }),
+    );
+
     this.app.post(
       "/logout",
       asyncHandler(async (req, res) => {
